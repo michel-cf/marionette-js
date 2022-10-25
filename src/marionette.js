@@ -39,21 +39,13 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
 
-    // set up some variables
-    const $mainContent = document.querySelector("#content-wrapper");
-
     function loadContent(href) {
         // TODO fade out
 
         fetch(href).then(response => {
             return response.text();
-        }).then(data => {
-            const domData = new DOMParser().parseFromString(data, "text/html");
-            const content = domData.querySelector('#content');
-            $mainContent.replaceChildren(content);
-            // TODO fade in
-
-        }).catch(error => {
+        }).then(data => updateWindow(data)
+        ).catch(error => {
             console.log(error)
         });
     }
@@ -67,13 +59,20 @@ document.addEventListener("DOMContentLoaded", function () {
             body: data
         }).then(response => {
             return response.text();
-        }).then(data => {
-            const domData = new DOMParser().parseFromString(data.body, "text/html");
-            const content = domData.querySelector('#content');
-            $mainContent.replaceChildren(content);
-            // TODO fade in
-        }).catch(error => {
+        }).then(data => updateWindow(data)
+        ).catch(error => {
             console.log(error)
+        });
+    }
+
+    function updateWindow(response) {
+        const domData = new DOMParser().parseFromString(response, "text/html");
+        domData.querySelectorAll('[data-mjs-content]').forEach(content => {
+            console.log(content);
+            const targetName = content.getAttribute('data-mjs-content');
+            console.log(targetName);
+            const target = document.querySelector('[data-mjs-target="' + targetName + '"]');
+            target.replaceChildren(content);
         });
     }
 
